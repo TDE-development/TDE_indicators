@@ -1,0 +1,5 @@
+﻿:: cmd_deployment.txt
+
+copy "C:\Projects\TDE\TDE_indicators\TDE_indicators\obj\Debug\net8.0\TDE_indicators.dll" "C:\Users\%username%\AppData\Roaming\ATAS\Indicators\TDE_indicators.dll" /Y
+
+PAUSE
