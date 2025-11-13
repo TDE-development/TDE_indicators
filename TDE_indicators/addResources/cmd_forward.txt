@@ -1,0 +1,5 @@
+:: cmd_forward.txt
+
+copy "C:\Projects\TDE\TDE_indicators\TDE_indicators\obj\Debug\net8.0\TDE_indicators.dll" "C:\Projects\TDE\TDE_deployment\TDE_indicators.dll" /Y
+
+PAUSE
