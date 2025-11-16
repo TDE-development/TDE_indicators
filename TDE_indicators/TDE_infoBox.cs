@@ -79,6 +79,9 @@
             }
         }
 
+        [Display(Name = "BarLine", GroupName = "Settings", Order = 80)]
+        public bool BarlineVisible { get; set; }
+
         [Display(Name = "Darkmode", GroupName = "Settings", Order = 90)]
         public bool Darkmode { get; set; }
         #endregion
@@ -155,6 +158,13 @@
 
             context.DrawRectangle(colorLine, lineRect);
             context.DrawString(infoText, textFont, colorText, textRect);
+
+            if (BarlineVisible)
+            {
+                context.DrawLine(colorLine, ChartArea.Width / 2 + (int)textSize.Width + 20 + 30, 30                  // x1, y1
+                                          , ChartArea.Width / 2 + (int)textSize.Width + 20 + 30, ChartArea.Height);  // x2, y2
+            }
+
         }
 
         protected override void OnCalculate(int bar, decimal value)
