@@ -3,16 +3,21 @@
     using System;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics;
     using System.Drawing;
+    using System.Globalization;
     using System.Reflection.Metadata;
+    using System.Windows.Media;
     using ATAS.Indicators;        //-- <HintPath> ..\..\..\..\Program Files(x86)\ATAS Platform\ATAS.Indicators.dll
     using ATAS.Indicators.Drawing;
     using Microsoft.VisualBasic;
     using OFT.Rendering.Context;
     using OFT.Rendering.Control;
+    using OFT.Rendering.Settings;
     using OFT.Rendering.Tools;
     using Utils.Common.Attributes;
     using Utils.Common.Logging;   //-- <HintPath> ..\..\..\..\Program Files(x86)\ATAS Platform\Utils.Common.dll
+    using static ATAS.Indicators.Technical.BarTimer;
 
 
     [Category("TDE_indicators")]
@@ -21,11 +26,11 @@
     public class TDE_infoBox : Indicator
     {
         #region Fields
-        private int _barNumber;
-        public int  _lviBar;  // LastVisibleBarNumber
-        public int  _xByBar;
-        public int  _yByBar;
-
+        private int     _barNumber;
+        public  int     _lviBar;  // LastVisibleBarNumber
+        public  int     _xByBar;
+        public  int     _yByBar;
+        private decimal _hLine1 = 6678.00m;
 
         public decimal bXopen;
         public decimal bXhigh;
@@ -56,10 +61,8 @@
         public decimal bXvalArea__High;
         public decimal bXvaLArea__Low;
 
-        // public decimal  bXcust__ticks;
-        // public readonly IndexPerformance.XcRXV_ticks _ticks = new();
         #endregion
-        
+
         #region Settings
 
         [Display(Name = "Bar Number", GroupName = "Settings", Order = 10)]
@@ -87,8 +90,34 @@
 
         [Display(Name = "Darkmode", GroupName = "Settings", Order = 90)]
         public bool Darkmode { get; set; }
+
+        [Display(Name = "horizontal Line", GroupName = "add Settings", Order = 10)]
+        public bool HlineVisible { get; set; }
+
+        [Display(Name = "horizontal Linevalue", GroupName = "add Settings", Order = 20)]
+        public decimal HLinevalue
+        {
+            get => _hLine1;
+            set
+            {
+                if (_hLine1 == value)
+                    return;
+
+                if (value < 0)  // O = curr.Bar
+                    return;
+
+                _hLine1 = value;
+
+                RaisePropertyChanged(nameof(_hLine1));
+                RecalculateValues();
+            }
+        }
+
+        //[Display(Name = "horizontal Pricelabel", GroupName = "add Settings", Order = 30)]
+        //public bool ShowPrice { get; set; }
         #endregion
         //--------
+
         public TDE_infoBox()
         {
             EnableCustomDrawing = true;
@@ -101,6 +130,8 @@
         }
         protected override void OnRender(RenderContext context, DrawingLayouts layout)
         {
+            var pen = new Pen();
+            
             var colorLine = RenderPens.OrangeRed;
             var colorText = System.Drawing.Color.OrangeRed;
 
@@ -122,11 +153,11 @@
             infoText = infoText + "Low:    "     + bXlow.ToString()                                      + System.Environment.NewLine;
             infoText = infoText + "Close:  "     + bXclose.ToString()                                    + System.Environment.NewLine;
             infoText = infoText                                                                          + System.Environment.NewLine;
-            infoText = infoText + "vol:    "     + bXvol.ToString()                                      + System.Environment.NewLine;
-            infoText = infoText + "delta:  "     + bXdelta.ToString()                                    + System.Environment.NewLine;
-            infoText = infoText + "maxd:   "     + bXmaxd.ToString()                                     + System.Environment.NewLine;
-            infoText = infoText + "mind:   "     + bXmind.ToString()                                     + System.Environment.NewLine;
-            infoText = infoText + "ticks:  "     + bXticks.ToString()                                    + System.Environment.NewLine;
+            infoText = infoText + "vol:    "     + bXvol.ToString("#,##0")                               + System.Environment.NewLine;
+            infoText = infoText + "delta:  "     + bXdelta.ToString("+#,##0;-#,##0;' '")                 + System.Environment.NewLine;
+            infoText = infoText + "maxd:   "     + bXmaxd.ToString("+#,##0;-#,##0;' '")                        + System.Environment.NewLine;
+            infoText = infoText + "mind:   "     + bXmind.ToString("+#,##0;-#,##0;' '")                          + System.Environment.NewLine;
+            infoText = infoText + "ticks:  "     + bXticks.ToString("#,##0")                             + System.Environment.NewLine;
             infoText = infoText                                                                          + System.Environment.NewLine;
             infoText = infoText + "maxVol_Pi__Price:  " + bXmaxVol_Pi__Price.ToString()                  + System.Environment.NewLine;
             infoText = infoText + "maxVol_Pi__Volume: " + bXmaxVol_Pi__Volume.ToString()                 + System.Environment.NewLine;
@@ -148,7 +179,13 @@
             infoText = infoText + "bar valArea__High:      " + bXvalArea__High.ToString()                + System.Environment.NewLine;
             infoText = infoText + "bar vaLArea__Low:       " + bXvaLArea__Low.ToString()                 + System.Environment.NewLine;
             infoText = infoText                                                                          + System.Environment.NewLine;
-        //  infoText = infoText + "XcRXV_ticks (value):    " + "coming soon..."                          + System.Environment.NewLine;
+
+            if (HlineVisible)
+            {
+                infoText = infoText + "_______________"                                                  + System.Environment.NewLine;                  
+                infoText = infoText + "HLine:  " + _hLine1.ToString("0.00")                              + System.Environment.NewLine;
+              //infoText = infoText                                                                      + System.Environment.NewLine;
+            }
 
             //------
             var textFont = new RenderFont("Courier New", 8);
@@ -168,6 +205,12 @@
                                           , _xByBar, ChartArea.Height);  // x2, y2
             }
 
+            if (HlineVisible)
+            {
+                context.DrawLine(colorLine,               0, _yByBar     // x1, y1
+                                          , ChartArea.Width, _yByBar);   // x2, y2
+            }
+
         }
 
         protected override void OnCalculate(int bar, decimal value)
@@ -177,6 +220,7 @@
                 IndicatorCandle candle = GetCandle(bar - BarNumber);
                 _lviBar = LastVisibleBarNumber;
                 _xByBar = ChartInfo.GetXByBar(_lviBar - BarNumber, false);
+                _yByBar = ChartInfo.GetYByPrice(_hLine1, false);
 
 
                 bXopen  = candle.Open;
@@ -225,6 +269,7 @@
                 bXvaLArea__Low  = valArea.ValueAreaLow;
             }
         }
+
     }
 }
 
