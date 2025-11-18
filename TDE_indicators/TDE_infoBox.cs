@@ -22,6 +22,9 @@
     {
         #region Fields
         private int _barNumber;
+        public int  _lviBar;  // LastVisibleBarNumber
+        public int  _xByBar;
+        public int  _yByBar;
 
 
         public decimal bXopen;
@@ -161,8 +164,8 @@
 
             if (BarlineVisible)
             {
-                context.DrawLine(colorLine, ChartArea.Width / 2 + (int)textSize.Width + 20 + 30, 30                  // x1, y1
-                                          , ChartArea.Width / 2 + (int)textSize.Width + 20 + 30, ChartArea.Height);  // x2, y2
+                context.DrawLine(colorLine, _xByBar, 30                  // x1, y1
+                                          , _xByBar, ChartArea.Height);  // x2, y2
             }
 
         }
@@ -172,6 +175,9 @@
             if (bar > 20)    //-- avoid "Index was out of range.Error"
             {
                 IndicatorCandle candle = GetCandle(bar - BarNumber);
+                _lviBar = LastVisibleBarNumber;
+                _xByBar = ChartInfo.GetXByBar(_lviBar - BarNumber, false);
+
 
                 bXopen  = candle.Open;
                 bXhigh  = candle.High;
