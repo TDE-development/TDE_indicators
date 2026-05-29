@@ -1,4 +1,4 @@
-﻿namespace ATAS.Indicators.IndexPerformance
+﻿namespace ATAS.Indicators.TDE_indicators
 {
     using System;
     using System.ComponentModel;
@@ -24,6 +24,13 @@
     {
         #region Fields
         private int _barNumber;
+        private int _barLine_offset;
+        private int _lviBar;  // LastVisibleBarNumber
+        private int _xByBar;
+        private int _yByBar;
+        public decimal bXvalArea__High;
+        public decimal bXvaLArea__Low;
+
 
         private readonly Technical.EMA  _ema1 = new();  //-- fast
         private readonly Technical.EMA  _ema2 = new();  //-- slow
@@ -61,6 +68,26 @@
                 _barNumber = value;
 
                 RaisePropertyChanged(nameof(_barNumber));
+                RecalculateValues();
+            }
+        }
+
+        [Display(Name = "BarLine", GroupName = "Settings", Order = 70)]
+        public bool BarlineVisible { get; set; }
+
+        [Display(Name = "BarLine offset", GroupName = "Settings", Order = 80)]
+        [Range(-50, 50)]
+        public int BarLine_offset
+        {
+            get => _barLine_offset;
+            set
+            {
+                if (_barLine_offset == value)
+                    return;
+
+                _barLine_offset = value;
+
+                RaisePropertyChanged(nameof(_barLine_offset));
                 RecalculateValues();
             }
         }
@@ -166,6 +193,13 @@
 
             context.DrawRectangle(colorLine, lineRect);
             context.DrawString(infoText, textFont, colorText, textRect);
+
+            if (BarlineVisible)
+            {
+                context.DrawLine(colorLine, _xByBar + _barLine_offset, 30                  // x1, y1
+                                          , _xByBar + _barLine_offset, ChartArea.Height);  // x2, y2
+            }
+
         }
 
         protected override void OnCalculate(int bar, decimal value)
@@ -188,6 +222,15 @@
                 bEMA2   = (decimal)ema2;
 
               //bBias   = (decimal)bias;
+
+
+              //----  calc. BarLine
+                _lviBar = LastVisibleBarNumber;
+                _xByBar = ChartInfo.GetXByBar(_lviBar - BarNumber, false);
+
+                ValueArea valArea = candle.ValueArea;
+                bXvalArea__High   = valArea.ValueAreaHigh;
+                bXvaLArea__Low    = valArea.ValueAreaLow;
 
             }
         }
