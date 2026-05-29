@@ -17,10 +17,10 @@
  // using BiasDetermination;  //-- C:\Users\ {userName} \AppData\Roaming\ATAS\Indicators\2a0cfe1b-251d-4783-9b14-6134af72643b.dll
 
 
-    [Category("IndexPerformance")]
-    [DisplayName("XinfoBox_priceEMAs")]
+    [Category("TDE_indicators")]
+    [DisplayName("TDE_infoBox_priceEMAs")]
 
-    public class XinfoBox_priceEMAs : Indicator
+    public class TDE_infoBox_priceEMAs : Indicator
     {
         #region Fields
         private int _barNumber;
@@ -109,7 +109,7 @@
         public bool Darkmode { get; set; }
         #endregion
         //--------
-        public XinfoBox_priceEMAs()
+        public TDE_infoBox_priceEMAs()
         {
             EnableCustomDrawing = true;
             SubscribeToDrawingEvents(DrawingLayouts.Final);
