@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion></AssemblyVersion>
@@ -37,7 +37,7 @@
       <HintPath>..\..\..\..\Program Files (x86)\ATAS Platform\OFT.Rendering.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore">
-      <HintPath>..\..\..\..\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\8.0.13\ref\net8.0\PresentationCore.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\10.0.5\ref\net10.0\PresentationCore.dll</HintPath>
     </Reference>
     <Reference Include="Utils.Common">
       <HintPath>..\..\..\..\Program Files (x86)\ATAS Platform\Utils.Common.dll</HintPath>
