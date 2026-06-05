@@ -13,8 +13,7 @@
     using OFT.Rendering.Tools;
     using Utils.Common.Attributes;
     using Utils.Common.Logging;   //-- <HintPath> ..\..\..\..\Program Files(x86)\ATAS Platform\Utils.Common.dll
-
- // using BiasDetermination;  //-- C:\Users\ {userName} \AppData\Roaming\ATAS\Indicators\2a0cfe1b-251d-4783-9b14-6134af72643b.dll
+    using BiasDetermination;      //-- C:\Users\ {userName} \AppData\Roaming\ATAS\Indicators\2a0cfe1b-251d-4783-9b14-6134af72643b.dll
 
 
     [Category("TDE_indicators")]
@@ -33,10 +32,8 @@
 
 
         private readonly Technical.EMA  _ema1 = new();  //-- fast
-        private readonly Technical.EMA  _ema2 = new();  //-- slow
-        private readonly Technical.EMA  _ema3 = new();
-     
-     // private readonly BiasDetermination.BiasDeterminationTool _bias = new();
+        private readonly Technical.EMA  _ema2 = new();  //-- slow     
+        private readonly BiasDetermination.BiasDeterminationTool _bias = new();
 
         public decimal bXopen;
         public decimal bXhigh;
@@ -46,7 +43,8 @@
         public decimal bEMA1;  //-- fast - EMA value
         public decimal bEMA2;  //-- slow - EMA value 
 
-        public decimal bBias;
+        public decimal bBias;  //-- Bias Value
+        public string  bBiDi;  //-- Bias Direction 
 
         #endregion
 
@@ -144,9 +142,7 @@
             _ema1.Period   = 10;
             _ema2.Period   = 20;
 
-         // _bias.
-
-            
+            _bias.AlertsEnabled = true;            
         }
 
         protected override void OnInitialize()
@@ -179,8 +175,8 @@
             infoText = infoText + $"EMA Values  "                                                        + System.Environment.NewLine;
             infoText = infoText + $"EMA({fastPeriod})     " + bEMA1.ToString("0.00")                     + System.Environment.NewLine;
             infoText = infoText + $"EMA({slowPeriod})     " + bEMA2.ToString("0.00")                     + System.Environment.NewLine;
-
-         // infoText = infoText + $"biasValue   " + bBias.ToString()                                     + System.Environment.NewLine;
+            infoText = infoText                                                                          + System.Environment.NewLine;
+            infoText = infoText + $"biasValue {bBiDi}  " + bBias.ToString("0.00")                        + System.Environment.NewLine;
 
             //------
             var textFont = new RenderFont("Courier New", 8);
@@ -209,7 +205,7 @@
                 var ema1 = _ema1.DataSeries[0][bar - BarNumber];
                 var ema2 = _ema2.DataSeries[0][bar - BarNumber];
 
-              //var bias = _bias.LineSeries.Count;
+                var bias = _bias.DataSeries[1][bar - BarNumber];
 
                 IndicatorCandle candle = GetCandle(bar - BarNumber);
 
@@ -221,10 +217,17 @@
                 bEMA1   = (decimal)ema1;
                 bEMA2   = (decimal)ema2;
 
-              //bBias   = (decimal)bias;
+                bBias   = (decimal)bias;
+
+                if      (bBias > 0)
+                     bBiDi = "^";      // Pfeil(⬆) : U + 2B06(Upwards Black Arrow)
+                else if (bBias < 0)
+                     bBiDi = "v";      // Pfeil(⬇) : U + 2B07(Downwards Black Arrow)
+                else
+                     bBiDi = "-";
 
 
-              //----  calc. BarLine
+                //----  calc. BarLine
                 _lviBar = LastVisibleBarNumber;
                 _xByBar = ChartInfo.GetXByBar(_lviBar - BarNumber, false);
 

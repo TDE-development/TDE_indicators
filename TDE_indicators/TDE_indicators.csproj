@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="AlphaX-BiasDetermination">
+      <HintPath>..\..\..\..\Users\alexAdmin\AppData\Roaming\ATAS\Indicators\2a0cfe1b-251d-4783-9b14-6134af72643b.dll</HintPath>
+    </Reference>
     <Reference Include="ATAS.DataFeedsCore">
       <HintPath>..\..\..\..\Program Files (x86)\ATAS Platform\ATAS.DataFeedsCore.dll</HintPath>
     </Reference>
